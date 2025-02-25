@@ -11,7 +11,7 @@ The conclusion to all of these problems is what this script does. It recursively
 It has many convenience features I've added over the last 1,5 years and I've used it on thousands of movies and episodes, but more on that below.<br>
 Before releasing the script I've tried to make it customizable enough that it can be used on a wide variety of collections with different naming schemes and preferences.
 
-## Example usage on Star Trek: Voyager DVD remuxes (7 Seasons, 168 Episodes, 275GB)
+## Example usage on Star Trek: Voyager DVD remuxes (7 Seasons, 168 Episodes, 275GB, stored on NAS, accessed via SMB)
 ![Gif that shows how the 168 episodes of Star Trek: Voyager are edited with mkvpropr in less than a minute.](/assets/example_gifs/mkvp_tvshow_voyager.gif)
 Explanation:
 In this ~1min gif I've interactively set the
@@ -29,7 +29,7 @@ In this ~1min gif I've interactively set the
 12. 2nd subtitle track default flag to "1"
 13. 3rd subtitle track language to "en"
 14. 3rd subtitle track name to "English SDH (VOB)"
-15. 3rd subtitle hearing impaired flag to "1"
+15. 3rd subtitle hearing impaired flag to "1"<br>
 for 168 files.
 
 ## How to install mkvpropr
@@ -72,7 +72,7 @@ options:
 
 ## Configuring mkvpropr
 ### Before running the script for the first time, you have to customize it by editing "mkvp_config.yaml" to make it fit your collection
-**langs**
+**langs**<br>
 This holds all possible inputs that are used to edit track properties and you can and should add your own.
 
 `langs` is a dictionary of inputs, following this format:
@@ -106,7 +106,7 @@ Using "de" as the input for a track would then set its track name to "German" an
 `  "germ": ["German", "de"]`<br>
 Both of these will yield the same result, but you'd use `germ` instead of `de` as input.
 
-**forced_langs, sdh_langs, comm_langs,**
+**forced_langs, sdh_langs, comm_langs,**<br>
 If you want a specific input to also enable a flag for that track, you have to add that input to one of these lists:
 ```
 # Language codes that get a "forced" flag (must exist in "langs")
@@ -133,33 +133,33 @@ Using "dec" as an input would then also enable the commentary flag for that trac
 Adding forced and hearing impaired flags works the same way:<br>
 You have to add the input you used in `langs` to the `forced_langs` or `sdh_langs` list.
 
-**default flag**
+**default flag**<br>
 While forced, hearing impaired and commentary flags are hardcoded per input, the default flag is optional.<br>
 Append a `1` to an input if you want the track to get the default flag (multiple default flags are possible).<br>
 `en1` for example would result in the english track having the default flag enabled.
 
-**ignore_dirs**
+**ignore_dirs**<br>
 The script won't recurse into folders that match entries of this list. I've added standard extras folders.<br>
 You can still run the script in a folder on this list if you call it in the folder itself or pass the folder name via `-d`.
 
-**ignore_nfos**
+**ignore_nfos**<br>
 Nfos not related to an mkv file go here. That way they can be ignored when the script checks if there's 1 mkv and 1 nfo in the folder for automatic renaming.
 
-**auto_set_flags**
+**auto_set_flags**<br>
 This allows to automatically set flags based on the file name, even when you skip a track via `-` as input.<br>
 For example a track with "Commentary with Director Ridley Scott" as track name should not be renamed to "Commentary English" via "enc" as input since that would mean losing information.<br>
 However the commentary flag might not be set for it. With auto_set_flags enabled, this track would still get the commentary flag even if you don't change it otherwise, depending on the regexes.
 Note: If you skip an entire group via `s`, no changes are made.
 
-**add_sub_format**
+**add_sub_format**<br>
 This enables appending the subtitle format to the track name in braces. Useful when you have multiple identical subtitles with different formats. srt, pgs + vob of plain English for example.<br>
 Without it, you'd end up with 3 tracks called "English". With it, you'd get "English (SRT)", "English (PGS)" and "English (VOB)" as track titles.
 
-**sub_codec_replacements**
+**sub_codec_replacements**<br>
 Depends on add_sub_format.<br>
 Here you can set what you'd like to append to the track names of subtitles. If you change this, you'll also have to edit the regexes in `pattern_sub` to match. That prevents the format from being appended multiple times like this "English (SRT) (SRT)" if you re-run the script.
 
-**rename_mkvs**
+**rename_mkvs**<br>
 This does two things:
 1. It checks if there are counters appended to the file name of .mkvs (usually from remuxing via MKVToolNix) and removes them.<br>
 `The Congress (2013) (1).mkv` or `The Congress (2013) (2) (1).mkv`<br>
@@ -167,16 +167,16 @@ would be renamed to `The Congress (2013).mkv` (if the resulting file already exi
 2. It checks if there is 1 .mkv file and 1 .nfo file in a folder and if so renames the .mkv file to match the .nfo file.<br>
 This is useful when you replace an existing .mkv file with a new version of a different name but `.nfo`, `.thumb` and `-mediainfo.xml` files rely on a matching name.
 
-**pattern_unwanted**
+**pattern_unwanted**<br>
 With this regex you can exclude files you don't want to edit. Trailers, sample files, proof files and so on.
 
-**pattern_tv**
+**pattern_tv**<br>
 This regex is used as a fallback if the episode title extraction via a matching .nfo file has failed.<br>
 Adjust it according to your naming scheme. If all your episodes are named `Series name SxxExx Episode` for example, you could use:
 `'^.* \S\d{2,4}E\d{2,4}(?: S\d{2,4}E\d{2,4})* (.*)\.mkv$'` (assuming multi-episodes are `Series name SxxExx SxxExx Episode name`)<br>
 If you want to disable the fallback, set this to `'^_$'` so it never matches.
 
-**pattern_movie**
+**pattern_movie**<br>
 This regex is used as a fallback if the movie title extraction via a matching .nfo file has failed.<br>
 Adjust it according to your naming scheme. If your movies are named `Title (year).mkv` for example, you could use:
 `'^(.*)\s\(\d{4}\)\.mkv$'`
@@ -259,14 +259,14 @@ You can also only skip individual tracks like this (to for example keep commenta
 ### Special inputs
 While the script is running and prompts the user for input, a few special options/inputs are available.
 
-**s to skip**
+**s to skip**<br>
 Only use `s` as input for a group to skip it.
 
-**v to show possible input values**
+**v to show possible input values**<br>
 Only use `v` as input to show all available language codes (useful if you're unsure if you have configured a specific language code or forgot what you called it).
 
-**f to show filenames**
+**f to show filenames**<br>
 Only use `f` as input to show the filenames of each file in the group (this can help you make sure that you are only editing files that you want to edit).
 
-**ff to show absolute filepaths**
+**ff to show absolute filepaths**<br>
 Only use `ff` as input to show the absolute paths of each file in the group.
