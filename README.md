@@ -7,9 +7,9 @@ A step up from that was performing changes in MKVToolNix on one file, copying th
 However, manually grouping files by identical track properties and then performing changes once per group in MKVToolNix was still tedious and annoying work.<br>
 Which is why I wrote .bat files for each common type of audio/subtitle track combination with fixed options. Naturally, that also quickly became unwieldy (I had 20ish .bat files in the end).<br>
   
-The conclusion to all of these problems is what this script does. It recursively searches all .mkv and .nfo files in all subfolders (except for excluded ones), groups them based on their video, audio and subtitle track combinations, track names, formats and flags and then lets the user decide once per group which changes should be performed on all files in the group. The .nfo is used to extract the movie/episode title, which is set as the file title.<br>
+The conclusion to all of these problems is what this script does. It recursively searches all .mkv and .nfo files in all subfolders (except for excluded ones), groups them based on their video, audio and subtitle track combinations, track names and flags and then lets the user decide once per group which changes should be performed on all files in the group. The .nfo is used to extract the movie/episode title, which is set as the file title.<br>
 It has many convenience features I've added over the last 1,5 years and I've used it on thousands of movies and episodes, but more on that below.<br>
-Before releasing the script I've tried to make it customizable enough that it can be used on a wide variety of collections with different naming schemes and preferences.
+Before releasing the script I've tried to make it customizable enough to be used on a wide variety of collections with different naming schemes and preferences.
 
 ## Example usage on Star Trek: Voyager DVD remuxes (7 Seasons, 168 Episodes, 275GB, stored on NAS, accessed via SMB)
 ![Gif that shows how the 168 episodes of Star Trek: Voyager are edited with mkvpropr in less than a minute.](/assets/example_gifs/mkvp_tvshow_voyager.gif)
@@ -72,10 +72,10 @@ options:
 ```
 
 ## Configuring mkvpropr
-### Before running the script for the first time, you have to customize it by editing "mkvp_config.yaml" to make it fit your collection
+### Before running the script for the first time, you have to customize it by editing "mkvp_config.yaml" to adjust it for your collection
 
 ### langs
-This holds all possible inputs that are used to edit track properties and you can and should add your own.
+This holds all possible inputs that are used to edit track properties and you can and should add your own as I only provide a few examples.
 
 `langs` is a dictionary of inputs, following this format:<br>
 `"what you input": ["Name of the track", "language code"]`<br>
@@ -109,7 +109,7 @@ Using "de" as the input for a track would then set its track name to "German" an
 Both of these will yield the same result, but you'd use `germ` instead of `de` as input.
 
 ### forced_langs, sdh_langs, comm_langs
-If you want a specific input to also enable a flag for that track, you have to add that input to one of these lists:
+If you want a specific input to also always enable a flag for that track, you have to add that input to one of these lists:
 ```
 # Language codes that get a "forced" flag (must exist in "langs")
 forced_langs:
@@ -130,7 +130,7 @@ to the [langs](https://github.com/AverageHoarder/mkvpropr?tab=readme-ov-file#lan
 `  -dec`<br>
 to the `comm_langs` list.
 
-Using "dec" as an input would then also enable the commentary flag for that track.<br>
+Using `dec` as an input would then also enable the commentary flag for that track.<br>
   
 Adding forced and hearing impaired flags works the same way:<br>
 You have to add the input you used in `langs` to the `forced_langs` or `sdh_langs` list.
@@ -150,15 +150,16 @@ Nfos not related to an mkv file go here. That way they can be ignored when the s
 ### auto_set_flags
 This tries to automatically set forced, hearing impaired and commentary flags based on the track name when you skip a track via `-` as input.<br>
 For example a track with "Commentary by Director Ridley Scott" as track name is too specific to create an input for. "enc" for "Commentary English" for example would mean losing information.<br>
+
 If that track lacks a commentary flag and you want it set, auto_set_flags comes into play.<br>
 When enabled, this track will get the commentary flag if the chosen regex matches the track name.<br>
 You can edit the regex if you for example also want tracks containing "Interview" to get a commentary flag.<br>
-Note: If you skip an entire group via `s`, no changes are made.
+**Note:** If you skip an entire group via `s`, no changes are made.
 
 ### add_sub_format
-This enables appending the subtitle format to the track name in braces. Useful when you have multiple identical subtitles with different formats. srt, pgs + vob of plain English for example.<br>
+This enables appending the subtitle format to the track name in braces which is useful when you have multiple identical subtitles with different formats. srt, pgs + vob of plain English for example.<br>
 Without it, you'd end up with 3 tracks called "English". With it, you'd get "English (SRT)", "English (PGS)" and "English (VOB)" as track titles.<br>
-Note: For consistency reasons, it will append the format even to tracks that are skipped by using "-" as input.
+**Note:** For consistency reasons, it will append the format even to tracks that are skipped by using `-` as input.
 
 ### sub_codec_replacements
 Depends on [add_sub_format](https://github.com/AverageHoarder/mkvpropr?tab=readme-ov-file#add_sub_format).<br>
@@ -179,19 +180,19 @@ With this regex you can exclude files you don't want to edit. Trailers, sample f
 This regex is used as a fallback if the episode title extraction via a matching .nfo file has failed.<br>
 Adjust it according to your naming scheme. If all your episodes are named `Series name SxxExx Episode` for example, you could use:<br>
 `'^.* \S\d{2,4}E\d{2,4}(?: S\d{2,4}E\d{2,4})* (.*)\.mkv$'`<br>
-Assuming multi-episodes are named `Series name SxxExx SxxExx Episode name`.<br>
+Assuming multi-episodes are named `series name SxxExx SxxExx episode name`.<br>
 If you want to disable the fallback, set this to `'^_$'` so it never matches.
 
 ### pattern_movie
-This regex is used as a fallback if the movie title extraction via a matching .nfo file has failed.<br>
-Adjust it according to your naming scheme. If your movies are named `Title (year).mkv` for example, you could use:<br>
+This regex is used as a fallback if the movie title extraction via a matching .nfo file has failed (happens for multi-episode files for example)<br>
+Adjust it according to your naming scheme. If your movies are named `movie name (year).mkv` for example, you could use:<br>
 `'^(.*)\s\(\d{4}\)\.mkv$'`<br>
 If you want to disable the fallback, set this to `'^_$'` so it never matches.
 
 ## Usage in detail
 Either run `mkvp.py` in the root of the directory you wish to recursively edit or provide the directory via `mkvp.py -d`<br>
 After scanning, extracting information and grouping the files, the script will ask you for inputs for each group of files.<br>
-You can then use the codes you've added to [langs](https://github.com/AverageHoarder/mkvpropr?tab=readme-ov-file#langs) in the config to quickly assign track names, languages and flags.
+You can then use the inputs you've added to [langs](https://github.com/AverageHoarder/mkvpropr?tab=readme-ov-file#langs) in the config to quickly assign track names, languages and flags.
 
 **Example movie**:<br>
 Video track: English<br>
@@ -201,7 +202,8 @@ Subtitle tracks: forced English, English, English sdh, English commentary<br>
 Assuming [langs](https://github.com/AverageHoarder/mkvpropr?tab=readme-ov-file#langs) contains an entry for each of these inputs, you can input:<br>
 `en, de en1 enc, enf en1 ensd enc`<br>
 
-The `,` separates different track types, `1` appended to an input sets the default flag<br>
+The `,` separates different track types<br>
+`1` appended to an input sets the default flag<br>
 video code, audio code(s), subtitle code(s)<br>
 
 The result would be:<br>
@@ -214,10 +216,12 @@ videotrack:<br>
 audiotrack 1:<br>
 - name = Deutsch<br>
 - language = de<br>
+
 audiotrack 2:<br>
 - name = English<br>
 - language = en<br>
 - default flag = yes<br>
+
 audiotrack 3:<br>
 - name = Commentary English<br>
 - language = en<br>
@@ -227,14 +231,17 @@ subtitle track 1:<br>
 - name = Forced English<br>
 - language = en<br>
 - forced flag = yes<br>
+
 subtitle track 2:<br>
 - name = English<br>
 - language = en<br>
 - default flag = yes<br>
+
 subtitle track 3:<br>
 - name = English SDH<br>
 - language = en<br>
 - hearing impaired flag = yes<br>
+
 subtitle track 4:<br>
 - name = Commentary English<br>
 - language = en<br>
@@ -255,7 +262,7 @@ This skips setting the video track name and language<br>
 This keeps the audio tracks as they are.<br>
 
 `en, de en1 enc, - - - -`<br>
-This keeps the subtitle tracks unchanged.<br>
+This keeps the subtitle tracks unchanged (or only appends the [subformat](https://github.com/AverageHoarder/mkvpropr?tab=readme-ov-file#add_sub_format)).<br>
 
 `en, de en1 -, enf en1 ensd -`<br>
 You can also only skip individual tracks like this, which is useful to keep commentary track names that often contain unique information.<br>
@@ -264,7 +271,7 @@ You can also only skip individual tracks like this, which is useful to keep comm
 While the script is running and prompts the user for input, a few special options/inputs are available.
 
 **s to skip**<br>
-Only use `s` as input for a group to skip it.
+Only use `s` as input to skip the current group.
 
 **v to show possible input values**<br>
 Only use `v` as input to show all available language codes (useful if you're unsure if you have configured a specific input or forgot what you called it).<br>
