@@ -202,9 +202,8 @@ Subtitle tracks: forced English, English, English sdh, English commentary<br>
 Assuming [langs](https://github.com/AverageHoarder/mkvpropr?tab=readme-ov-file#langs) contains an entry for each of these inputs, you can input:<br>
 `en, de en1 enc, enf en1 ensd enc`<br>
 
-The `,` separates different track types<br>
+The `,` separates different track types (video, audio, subtitles)<br>
 `1` appended to an input sets the default flag<br>
-video code, audio code(s), subtitle code(s)<br>
 
 The result would be:<br>
 file title = movie or episode title<br>
@@ -248,7 +247,7 @@ subtitle track 4:<br>
 - commentary flag = yes<br>
 
 ## Selective usage via "-"
-You don't have to set the options for each track. Either skip an entire group by using `s` as the input (explained below) or skip individual tracks by using `-` instead of a user input.
+You don't have to set the options for each track. Either skip an entire group by using `s` as the input (explained below) or skip individual tracks by using `-` instead of a user defined input.
 
 **Example movie**:<br>
 Video track: English<br>
