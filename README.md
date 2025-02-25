@@ -126,7 +126,7 @@ comm_langs:
 
 If you for example wanted to add a german commentary option, you'd first add something like:<br>
 `  "dec": ["Commentary German", "de"]`<br>
-to the `langs` dictionary and then also add<br>
+to the [langs](https://github.com/AverageHoarder/mkvpropr?tab=readme-ov-file#langs) dictionary and then also add<br>
 `  -dec`<br>
 to the `comm_langs` list.
 
@@ -137,7 +137,7 @@ You have to add the input you used in `langs` to the `forced_langs` or `sdh_lang
 
 ### default flag
 While forced, hearing impaired and commentary flags are hardcoded per input, the default flag is optional.<br>
-Append a `1` to an input if you want the track to get the default flag (multiple default flags are possible).<br>
+Append a `1` to an input if you want the track to get the default flag (multiple tracks can have a default flag).<br>
 `en1` for example would result in the english track having the default flag enabled.
 
 ### ignore_dirs
@@ -145,21 +145,24 @@ The script won't recurse into folders that match entries of this list. I've adde
 You can still run the script in a folder on this list if you call it in the folder itself or pass the folder name via `-d`.
 
 ### ignore_nfos
-Nfos not related to an mkv file go here. That way they can be ignored when the script checks if there's 1 mkv and 1 nfo in the folder for automatic renaming.
+Nfos not related to an mkv file go here. That way they can be ignored when the script checks if there's 1 mkv and 1 nfo in the folder for [automatic renaming](https://github.com/AverageHoarder/mkvpropr?tab=readme-ov-file#rename_mkvs).
 
 ### auto_set_flags
-This allows to automatically set flags based on the file name, even when you skip a track via `-` as input.<br>
-For example a track with "Commentary with Director Ridley Scott" as track name should not be renamed to "Commentary English" via "enc" as input since that would mean losing information.<br>
-However the commentary flag might not be set for it. With auto_set_flags enabled, this track would still get the commentary flag even if you don't change it otherwise, depending on the regexes.<br>
+This tries to automatically set forced, hearing impaired and commentary flags based on the track name when you skip a track via `-` as input.<br>
+For example a track with "Commentary by Director Ridley Scott" as track name is too specific to create an input for. "enc" for "Commentary English" for example would mean losing information.<br>
+If that track lacks a commentary flag and you want it set, auto_set_flags comes into play.<br>
+When enabled, this track will get the commentary flag if the chosen regex matches the track name.<br>
+You can edit the regex if you for example also want tracks containing "Interview" to get a commentary flag.<br>
 Note: If you skip an entire group via `s`, no changes are made.
 
 ### add_sub_format
 This enables appending the subtitle format to the track name in braces. Useful when you have multiple identical subtitles with different formats. srt, pgs + vob of plain English for example.<br>
-Without it, you'd end up with 3 tracks called "English". With it, you'd get "English (SRT)", "English (PGS)" and "English (VOB)" as track titles.
+Without it, you'd end up with 3 tracks called "English". With it, you'd get "English (SRT)", "English (PGS)" and "English (VOB)" as track titles.<br>
+Note: For consistency reasons, it will append the format even to tracks that are skipped by using "-" as input.
 
 ### sub_codec_replacements
-Depends on add_sub_format.<br>
-Here you can set what you'd like to append to the track names of subtitles. If you change this, you'll also have to edit the regexes in `pattern_sub` to match. That prevents the format from being appended multiple times like this "English (SRT) (SRT)" if you re-run the script.
+Depends on [add_sub_format](https://github.com/AverageHoarder/mkvpropr?tab=readme-ov-file#add_sub_format).<br>
+Here you can set what you'd like to append to the track names of subtitles in braces. If you change this, you'll also have to edit the regexes in `pattern_sub` to match as `pattern_sub` prevents the format from being appended multiple times like this "English (SRT) (SRT)" if you re-run the script.
 
 ### rename_mkvs
 This does two things:<br>
@@ -167,7 +170,7 @@ This does two things:<br>
 `The Congress (2013) (1).mkv` or `The Congress (2013) (2) (1).mkv`<br>
 would be renamed to `The Congress (2013).mkv` (if the resulting file already exists, renaming is skipped and a warning is logged).<br>
 2. It checks if there is 1 .mkv file and 1 .nfo file in a folder and if so renames the .mkv file to match the .nfo file.<br>
-This is useful when you replace an existing .mkv file with a new version of a different name but `.nfo`, `.thumb` and `-mediainfo.xml` files rely on a matching name.
+This is useful when you replace an existing movie with a new version of a different name as it saves you the trouble to rename and allows to extract the title from the matching `.nfo` file.
 
 ### pattern_unwanted
 With this regex you can exclude files you don't want to edit. Trailers, sample files, proof files and so on.
@@ -175,7 +178,8 @@ With this regex you can exclude files you don't want to edit. Trailers, sample f
 ### pattern_tv
 This regex is used as a fallback if the episode title extraction via a matching .nfo file has failed.<br>
 Adjust it according to your naming scheme. If all your episodes are named `Series name SxxExx Episode` for example, you could use:<br>
-`'^.* \S\d{2,4}E\d{2,4}(?: S\d{2,4}E\d{2,4})* (.*)\.mkv$'` (assuming multi-episodes are `Series name SxxExx SxxExx Episode name`)<br>
+`'^.* \S\d{2,4}E\d{2,4}(?: S\d{2,4}E\d{2,4})* (.*)\.mkv$'`<br>
+Assuming multi-episodes are named `Series name SxxExx SxxExx Episode name`.<br>
 If you want to disable the fallback, set this to `'^_$'` so it never matches.
 
 ### pattern_movie
@@ -187,62 +191,62 @@ If you want to disable the fallback, set this to `'^_$'` so it never matches.
 ## Usage in detail
 Either run `mkvp.py` in the root of the directory you wish to recursively edit or provide the directory via `mkvp.py -d`<br>
 After scanning, extracting information and grouping the files, the script will ask you for inputs for each group of files.<br>
-You can then use the codes you've added to "langs" in the config to quickly assign track names, languages and flags.
+You can then use the codes you've added to [langs](https://github.com/AverageHoarder/mkvpropr?tab=readme-ov-file#langs) in the config to quickly assign track names, languages and flags.
 
-Example movie:<br>
+**Example movie**:<br>
 Video track: English<br>
 Audio tracks: German, English, English commentary<br>
 Subtitle tracks: forced English, English, English sdh, English commentary<br>
 
-Assuming "langs" contains an entry for each of these inputs, you can input:<br>
+Assuming [langs](https://github.com/AverageHoarder/mkvpropr?tab=readme-ov-file#langs) contains an entry for each of these inputs, you can input:<br>
 `en, de en1 enc, enf en1 ensd enc`<br>
 
-The `,` separates different track types, `1` behind a code sets the default flag<br>
+The `,` separates different track types, `1` appended to an input sets the default flag<br>
 video code, audio code(s), subtitle code(s)<br>
 
 The result would be:<br>
 file title = movie or episode title<br>
 
 videotrack:<br>
-name = movie or episode title<br>
-language = en<br>
+- name = movie or episode title<br>
+- language = en<br>
 
 audiotrack 1:<br>
-name = Deutsch<br>
-language = de<br>
+- name = Deutsch<br>
+- language = de<br>
 audiotrack 2:<br>
-name = English<br>
-language = en<br>
-default flag = yes<br>
+- name = English<br>
+- language = en<br>
+- default flag = yes<br>
 audiotrack 3:<br>
-name = Commentary English<br>
-language = en<br>
-commentary flag = yes<br>
+- name = Commentary English<br>
+- language = en<br>
+- commentary flag = yes<br>
 
 subtitle track 1:<br>
-name = Forced English<br>
-language = en<br>
-forced flag = yes<br>
+- name = Forced English<br>
+- language = en<br>
+- forced flag = yes<br>
 subtitle track 2:<br>
-name = English<br>
-language = en<br>
-default flag = yes<br>
+- name = English<br>
+- language = en<br>
+- default flag = yes<br>
 subtitle track 3:<br>
-name = English SDH<br>
-language = en<br>
-hearing impaired flag = yes<br>
+- name = English SDH<br>
+- language = en<br>
+- hearing impaired flag = yes<br>
 subtitle track 4:<br>
-name = Commentary English<br>
-language = en<br>
-commentary flag = yes<br>
+- name = Commentary English<br>
+- language = en<br>
+- commentary flag = yes<br>
 
 ## Selective usage via "-"
 You don't have to set the options for each track. Either skip an entire group by using `s` as the input (explained below) or skip individual tracks by using `-` instead of a user input.
 
-Example movie:<br>
+**Example movie**:<br>
 Video track: English<br>
 Audio tracks: German, English, English commentary<br>
-Subtitle tracks: forced English, English sdh, English commentary<br>
+Subtitle tracks: forced English, English, English sdh, English commentary<br>
 
 `-, de en1 enc, enf en1 ensd enc`<br>
 This skips setting the video track name and language<br>
@@ -253,8 +257,8 @@ This keeps the audio tracks as they are.<br>
 `en, de en1 enc, - - - -`<br>
 This keeps the subtitle tracks unchanged.<br>
 
-You can also only skip individual tracks like this (to for example keep commentary track names that often contain unique information):<br>
 `en, de en1 -, enf en1 ensd -`<br>
+You can also only skip individual tracks like this, which is useful to keep commentary track names that often contain unique information.<br>
 
 ## Special inputs
 While the script is running and prompts the user for input, a few special options/inputs are available.
@@ -263,7 +267,8 @@ While the script is running and prompts the user for input, a few special option
 Only use `s` as input for a group to skip it.
 
 **v to show possible input values**<br>
-Only use `v` as input to show all available language codes (useful if you're unsure if you have configured a specific language code or forgot what you called it).
+Only use `v` as input to show all available language codes (useful if you're unsure if you have configured a specific input or forgot what you called it).<br>
+It prints the content of [langs](https://github.com/AverageHoarder/mkvpropr?tab=readme-ov-file#langs) as `input | track name`
 
 **f to show filenames**<br>
 Only use `f` as input to show the filenames of each file in the group (this can help you make sure that you are only editing files that you want to edit).
