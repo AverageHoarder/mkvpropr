@@ -29,7 +29,8 @@ In this ~1min gif I've interactively set the
 12. 2nd subtitle track default flag to "1"
 13. 3rd subtitle track language to "en"
 14. 3rd subtitle track name to "English SDH (VOB)"
-15. 3rd subtitle hearing impaired flag to "1"<br>
+15. 3rd subtitle hearing impaired flag to "1"
+
 for 168 files.
 
 ## How to install mkvpropr
@@ -75,12 +76,12 @@ options:
 **langs**<br>
 This holds all possible inputs that are used to edit track properties and you can and should add your own.
 
-`langs` is a dictionary of inputs, following this format:
+`langs` is a dictionary of inputs, following this format:<br>
 `"what you input": ["Name of the track", "language code"]`<br>
   
-Let's break it down:
+Let's break it down:<br>
 `"what you input"`<br>
-The input can be up to 5 characters and can only contain a-z, A-Z and digits. `s`, `v`, `f` and `ff` are special inputs, so they cannot be used as regular inputs.
+The input can be up to 5 characters and can only contain a-z, A-Z and digits. `s`, `v`, `f` and `ff` are special inputs, so they cannot be used as regular inputs.<br>
 Don't use a number as the final character!
   
 `"Name of the track"`<br>
@@ -100,9 +101,9 @@ langs:
   "ensd": ["English SDH", "en"]
   "enc": ["Commentary English", "en"]
 ```
-If you wanted to have German as an option, you could add:
+If you wanted to have German as an option, you could add:<br>
 `  "de": ["German", "de"]`<br>
-Using "de" as the input for a track would then set its track name to "German" and its language to "de". You could also use another input like:
+Using "de" as the input for a track would then set its track name to "German" and its language to "de". You could also use another input like:<br>
 `  "germ": ["German", "de"]`<br>
 Both of these will yield the same result, but you'd use `germ` instead of `de` as input.
 
@@ -122,7 +123,7 @@ comm_langs:
   - enc
 ```
 
-If you for example wanted to add a german commentary option, you'd first add something like:
+If you for example wanted to add a german commentary option, you'd first add something like:<br>
 `  "dec": ["Commentary German", "de"]`<br>
 to the `langs` dictionary and then also add<br>
 `  -dec`<br>
@@ -148,7 +149,7 @@ Nfos not related to an mkv file go here. That way they can be ignored when the s
 **auto_set_flags**<br>
 This allows to automatically set flags based on the file name, even when you skip a track via `-` as input.<br>
 For example a track with "Commentary with Director Ridley Scott" as track name should not be renamed to "Commentary English" via "enc" as input since that would mean losing information.<br>
-However the commentary flag might not be set for it. With auto_set_flags enabled, this track would still get the commentary flag even if you don't change it otherwise, depending on the regexes.
+However the commentary flag might not be set for it. With auto_set_flags enabled, this track would still get the commentary flag even if you don't change it otherwise, depending on the regexes.<br>
 Note: If you skip an entire group via `s`, no changes are made.
 
 **add_sub_format**<br>
@@ -160,7 +161,7 @@ Depends on add_sub_format.<br>
 Here you can set what you'd like to append to the track names of subtitles. If you change this, you'll also have to edit the regexes in `pattern_sub` to match. That prevents the format from being appended multiple times like this "English (SRT) (SRT)" if you re-run the script.
 
 **rename_mkvs**<br>
-This does two things:
+This does two things:<br>
 1. It checks if there are counters appended to the file name of .mkvs (usually from remuxing via MKVToolNix) and removes them.<br>
 `The Congress (2013) (1).mkv` or `The Congress (2013) (2) (1).mkv`<br>
 would be renamed to `The Congress (2013).mkv` (if the resulting file already exists, renaming is skipped and a warning is logged).<br>
@@ -172,14 +173,14 @@ With this regex you can exclude files you don't want to edit. Trailers, sample f
 
 **pattern_tv**<br>
 This regex is used as a fallback if the episode title extraction via a matching .nfo file has failed.<br>
-Adjust it according to your naming scheme. If all your episodes are named `Series name SxxExx Episode` for example, you could use:
+Adjust it according to your naming scheme. If all your episodes are named `Series name SxxExx Episode` for example, you could use:<br>
 `'^.* \S\d{2,4}E\d{2,4}(?: S\d{2,4}E\d{2,4})* (.*)\.mkv$'` (assuming multi-episodes are `Series name SxxExx SxxExx Episode name`)<br>
 If you want to disable the fallback, set this to `'^_$'` so it never matches.
 
 **pattern_movie**<br>
 This regex is used as a fallback if the movie title extraction via a matching .nfo file has failed.<br>
-Adjust it according to your naming scheme. If your movies are named `Title (year).mkv` for example, you could use:
-`'^(.*)\s\(\d{4}\)\.mkv$'`
+Adjust it according to your naming scheme. If your movies are named `Title (year).mkv` for example, you could use:<br>
+`'^(.*)\s\(\d{4}\)\.mkv$'`<br>
 If you want to disable the fallback, set this to `'^_$'` so it never matches.
 
 ### Basic usage
@@ -187,7 +188,7 @@ Either run `mkvp.py` in the root of the directory you wish to recursively edit o
 After scanning, extracting information and grouping the files, the script will ask you for inputs for each group of files.<br>
 You can then use the codes you've added to "langs" in the config to quickly assign track names, languages and flags.
 
-Example movie:
+Example movie:<br>
 Video track: English<br>
 Audio tracks: German, English, English commentary<br>
 Subtitle tracks: forced English, English, English sdh, English commentary<br>
@@ -198,38 +199,38 @@ Assuming "langs" contains an entry for each of these inputs, you can input:<br>
 The `,` separates different track types, `1` behind a code sets the default flag<br>
 video code, audio code(s), subtitle code(s)<br>
 
-The result would be:
+The result would be:<br>
 file title = movie or episode title<br>
 
-videotrack:
+videotrack:<br>
 name = movie or episode title<br>
 language = en<br>
 
-audiotrack 1:
+audiotrack 1:<br>
 name = Deutsch<br>
 language = de<br>
-audiotrack 2:
+audiotrack 2:<br>
 name = English<br>
 language = en<br>
 default flag = yes<br>
-audiotrack 3:
+audiotrack 3:<br>
 name = Commentary English<br>
 language = en<br>
 commentary flag = yes<br>
 
-subtitle track 1:
+subtitle track 1:<br>
 name = Forced English<br>
 language = en<br>
 forced flag = yes<br>
-subtitle track 2:
+subtitle track 2:<br>
 name = English<br>
 language = en<br>
 default flag = yes<br>
-subtitle track 3:
+subtitle track 3:<br>
 name = English SDH<br>
 language = en<br>
 hearing impaired flag = yes<br>
-subtitle track 4:
+subtitle track 4:<br>
 name = Commentary English<br>
 language = en<br>
 commentary flag = yes<br>
@@ -239,7 +240,7 @@ If you recreate these exact settings in MKVToolNix you'll see just how much time
 ### Selective usage via "-"
 You don't have to set the options for each track. Either skip an entire group by using `s` as the input (explained below) or skip individual tracks by using `-` instead of a user input.
 
-Example movie:
+Example movie:<br>
 Video track: English<br>
 Audio tracks: German, English, English commentary<br>
 Subtitle tracks: forced English, English sdh, English commentary<br>
@@ -253,7 +254,7 @@ This keeps the audio tracks as they are.<br>
 `en, de en1 enc, - - - -`<br>
 This keeps the subtitle tracks unchanged.<br>
 
-You can also only skip individual tracks like this (to for example keep commentary track names that often contain unique information):
+You can also only skip individual tracks like this (to for example keep commentary track names that often contain unique information):<br>
 `en, de en1 -, enf en1 ensd -`<br>
 
 ### Special inputs
