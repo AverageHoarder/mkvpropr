@@ -13,7 +13,7 @@ Before releasing the script I've tried to make it customizable enough to be used
 
 ## Example usage on Star Trek: Voyager DVD remuxes (7 Seasons, 168 Episodes, 275GB, stored on NAS, accessed via SMB)
 ![Gif that shows how the 168 episodes of Star Trek: Voyager are edited with mkvpropr in less than a minute.](/assets/example_gifs/mkvp_tvshow_voyager.gif)
-Explanation:
+### Explanation:
 In this ~1min gif I've interactively set the
 1. file title and video track name based on the episode name in matching .nfo files (or extracted from the filename for multi-episode files)
 2. video track language to "en"
