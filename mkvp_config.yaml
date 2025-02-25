@@ -1,0 +1,73 @@
+# Dictionary of language codes, format: "what you input": ["Name of the track", "language code"]
+# "what you input" is limited to up to 5 characters (a-zA-Z0-9). Don't use digits at the end.
+langs:
+  "-": ["Keep Values", "Keep Values"] # Never delete this as it has a special function!
+  "zxx": ["No Language", "zxx"]
+  "enf": ["Forced English", "en"]
+  "en": ["English", "en"]
+  "ensd": ["English SDH", "en"]
+  "enc": ["Commentary English", "en"]
+
+# Language codes that get a "forced" flag (must exist in "langs")
+forced_langs:
+  - enf
+
+# Language codes that get a "hearing impaired" flag (must exist in "langs")
+sdh_langs:
+  - ensd
+
+# Language codes that get a "commentary" flag (must exist in "langs")
+comm_langs:
+  - enc
+
+# Directories that will not be scanned for .mkv and .nfo files (case insensitive)
+ignore_dirs:
+  - behind the scenes
+  - deleted scenes
+  - interviews
+  - scenes
+  - samples
+  - shorts
+  - featurettes
+  - clips
+  - other
+  - extras
+  - trailers
+
+# .nfo names that will be ignored
+ignore_nfos:
+  - season.nfo
+  - tvshow.nfo
+
+# Automatically set forced/hearing impaired/commentary flags based on track name when using "-" to skip, Default: True, can also be disabled via --no_auto_flags
+auto_set_flags: True
+
+# Patterns used for automatic flag setting
+pattern_forced: '(?i)\bforced\b'
+pattern_sdh: '(?i)\b(?:SDH|CC)\b'
+pattern_commentary: '(?i)\bcommentary\b'
+
+# Append the subtitle format, Default: True, can also be disabled via --no_subformat
+add_sub_format: True
+
+# subformat codes to display in the program and append to subtitle track names in braces
+sub_codec_replacements:
+  "SubStationAlpha": "ASS"
+  "SubRip/SRT": "SRT"
+  "HDMV PGS": "PGS"
+  "VobSub": "VOB"
+
+# Rename .mkv files to match .nfo files and trim " (1)" etc. from .mkv names, Default: True, can also be disabled via --no_renaming
+rename_mkvs: True
+
+# Regex to match unwanted .mkv files like trailers, samples..
+pattern_unwanted: '^.*-trailer.mkv$|^.*-sample.mkv$'
+
+# Regex to match your tv-show file naming scheme and extract the episode title (only used when no matching .nfo is found)
+pattern_tvshow: '^.*\(\d{4}\)\s-\s\S\d{2,4}E\d{2,4}(?:\sS\d{2,4}E\d{2,4})*\s-\s([^[]+)\s\[.*\](?:\s\(\d\))?\.mkv$'
+
+# Regex to match your movie file naming scheme and extract the movie title (only used when no matching .nfo is found)
+pattern_movie: '^(.*)\s\(\d{4}\)\s.*\.mkv$'
+
+# regular expression to check if the format is already appended to the track name, depends on "sub_codec_replacements"
+pattern_sub: '^(.*) (?:\(?SRT\)?|\(?ASS\)?|\(?VOB\)?|\(?PGS\)?)$'
