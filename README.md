@@ -34,7 +34,7 @@ In this ~1min gif I've interactively set the
 
 for 168 files.
 
-### Movie: Aliens
+### Movie: Aliens (22,4GB, on local m2 SSD)
 ![Gif that shows how the tracks of Aliens are set with mkvpropr.](/assets/example_gifs/mkvp_movie_aliens.gif)
 
 ## How to install mkvpropr
