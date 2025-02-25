@@ -73,7 +73,7 @@ options:
 
 ## Configuring mkvpropr
 ### Before running the script for the first time, you have to customize it by editing "mkvp_config.yaml" to make it fit your collection
-####langs
+#### langs
 This holds all possible inputs that are used to edit track properties and you can and should add your own.
 
 `langs` is a dictionary of inputs, following this format:<br>
@@ -107,7 +107,7 @@ Using "de" as the input for a track would then set its track name to "German" an
 `  "germ": ["German", "de"]`<br>
 Both of these will yield the same result, but you'd use `germ` instead of `de` as input.
 
-####forced_langs, sdh_langs, comm_langs
+#### forced_langs, sdh_langs, comm_langs
 If you want a specific input to also enable a flag for that track, you have to add that input to one of these lists:
 ```
 # Language codes that get a "forced" flag (must exist in "langs")
@@ -134,33 +134,33 @@ Using "dec" as an input would then also enable the commentary flag for that trac
 Adding forced and hearing impaired flags works the same way:<br>
 You have to add the input you used in `langs` to the `forced_langs` or `sdh_langs` list.
 
-####default flag
+#### default flag
 While forced, hearing impaired and commentary flags are hardcoded per input, the default flag is optional.<br>
 Append a `1` to an input if you want the track to get the default flag (multiple default flags are possible).<br>
 `en1` for example would result in the english track having the default flag enabled.
 
-####ignore_dirs
+#### ignore_dirs
 The script won't recurse into folders that match entries of this list. I've added standard extras folders.<br>
 You can still run the script in a folder on this list if you call it in the folder itself or pass the folder name via `-d`.
 
-####ignore_nfos
+#### ignore_nfos
 Nfos not related to an mkv file go here. That way they can be ignored when the script checks if there's 1 mkv and 1 nfo in the folder for automatic renaming.
 
-####auto_set_flags
+#### auto_set_flags
 This allows to automatically set flags based on the file name, even when you skip a track via `-` as input.<br>
 For example a track with "Commentary with Director Ridley Scott" as track name should not be renamed to "Commentary English" via "enc" as input since that would mean losing information.<br>
 However the commentary flag might not be set for it. With auto_set_flags enabled, this track would still get the commentary flag even if you don't change it otherwise, depending on the regexes.<br>
 Note: If you skip an entire group via `s`, no changes are made.
 
-####add_sub_format
+#### add_sub_format
 This enables appending the subtitle format to the track name in braces. Useful when you have multiple identical subtitles with different formats. srt, pgs + vob of plain English for example.<br>
 Without it, you'd end up with 3 tracks called "English". With it, you'd get "English (SRT)", "English (PGS)" and "English (VOB)" as track titles.
 
-####sub_codec_replacements
+#### sub_codec_replacements
 Depends on add_sub_format.<br>
 Here you can set what you'd like to append to the track names of subtitles. If you change this, you'll also have to edit the regexes in `pattern_sub` to match. That prevents the format from being appended multiple times like this "English (SRT) (SRT)" if you re-run the script.
 
-####rename_mkvs
+#### rename_mkvs
 This does two things:<br>
 1. It checks if there are counters appended to the file name of .mkvs (usually from remuxing via MKVToolNix) and removes them.<br>
 `The Congress (2013) (1).mkv` or `The Congress (2013) (2) (1).mkv`<br>
@@ -168,16 +168,16 @@ would be renamed to `The Congress (2013).mkv` (if the resulting file already exi
 2. It checks if there is 1 .mkv file and 1 .nfo file in a folder and if so renames the .mkv file to match the .nfo file.<br>
 This is useful when you replace an existing .mkv file with a new version of a different name but `.nfo`, `.thumb` and `-mediainfo.xml` files rely on a matching name.
 
-####pattern_unwanted
+#### pattern_unwanted
 With this regex you can exclude files you don't want to edit. Trailers, sample files, proof files and so on.
 
-####pattern_tv
+#### pattern_tv
 This regex is used as a fallback if the episode title extraction via a matching .nfo file has failed.<br>
 Adjust it according to your naming scheme. If all your episodes are named `Series name SxxExx Episode` for example, you could use:<br>
 `'^.* \S\d{2,4}E\d{2,4}(?: S\d{2,4}E\d{2,4})* (.*)\.mkv$'` (assuming multi-episodes are `Series name SxxExx SxxExx Episode name`)<br>
 If you want to disable the fallback, set this to `'^_$'` so it never matches.
 
-####pattern_movie
+#### pattern_movie
 This regex is used as a fallback if the movie title extraction via a matching .nfo file has failed.<br>
 Adjust it according to your naming scheme. If your movies are named `Title (year).mkv` for example, you could use:<br>
 `'^(.*)\s\(\d{4}\)\.mkv$'`<br>
