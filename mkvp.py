@@ -604,14 +604,28 @@ def rename_to_nfo(directory, single_folder):
                 mkvs_renamed += 1
 
 def extract_title(file_path):
-    # Try to extract the movie name or tv show title from a matching .nfo and use regex on the file title as fallback
+    # Try to extract the movie name or tv show episode title from a matching .nfo and use regex on the file title as fallback
     filename = os.path.basename(file_path)
     nfo_file = os.path.splitext(file_path)[0]+".nfo"
     if os.path.isfile(nfo_file): # Check for matching .nfo file to extract the title
         try:
-            tree = ET.parse(nfo_file)
-            title = tree.findtext('title') # Get title from .nfo
-        except ET.ParseError: # Fall back to using the filename if the parsing fails (happens for multi-episode .nfos with multiple roots)
+            with open(nfo_file) as f:
+                xml = f.read()
+            root = ET.fromstring(re.sub(r"(<\?xml[^>]+\?>(?:\n<!--[^>]+-->)?)", r"\1\n<root>", xml) + "</root>") # Add fake root to parse multi-episode nfos with multiple roots
+            titles = []
+            for child in root:
+                titles.append(child.findtext('title'))
+            if titles:
+                if len(titles) == 1:
+                    title = titles[0]
+                elif len(titles) == 2:
+                    title = (" & ").join(titles) # Double episodes get "episode 1 & episode 2"
+                else:
+                    title = ", ".join(titles[:-1]) + " & " + titles[-1] # Multi episodes get "episode 1, episode 2 & episode 3"
+            else:
+                title = ""
+        except ET.ParseError as e: # Fall back to using the filename if the parsing fails
+            print(f"Error while parsing {nfo_file}: {e}\nAttempting to extract it from the filename instead.")
             match_tvshow = re.match(pattern_tvshow, filename)
             match_movie = re.match(pattern_movie, filename)
             title=""

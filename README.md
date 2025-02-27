@@ -181,7 +181,7 @@ This is useful when you replace an existing movie with a new version of a differ
 With this regex you can exclude files you don't want to edit. Trailers, sample files, proof files and so on.
 
 ### pattern_tv
-This regex is used as a fallback if the episode title extraction via a matching .nfo file has failed (happens for multi-episode files for example).<br>
+This regex is used as a fallback if the episode title extraction via a matching .nfo file has failed.<br>
 Adjust it according to your naming scheme. If all your episodes are named `Series name SxxExx Episode` for example, you could use:<br>
 `'^.* \S\d{2,4}E\d{2,4}(?: S\d{2,4}E\d{2,4})* (.*)\.mkv$'`<br>
 Assuming multi-episodes are named `series name SxxExx SxxExx episode name`.<br>
