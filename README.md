@@ -162,7 +162,7 @@ You can edit the regex if you for example also want tracks containing "Interview
 
 ### add_sub_format
 This enables appending the subtitle format to the track name in braces which is useful when you have multiple identical subtitles with different formats. srt, pgs + vob of plain English for example.<br>
-Without it, you'd end up with 3 tracks called "English". With it, you'd get "English (SRT)", "English (PGS)" and "English (VOB)" as track titles.<br>
+Without it, you'd end up with 3 tracks called "English". With it, you'd get "English (SRT)", "English (PGS)" and "English (VOB)" as track names.<br>
 **Note:** For consistency reasons, it will append the format even to tracks that are skipped by using `-` as input.
 
 ### sub_codec_replacements
@@ -181,14 +181,14 @@ This is useful when you replace an existing movie with a new version of a differ
 With this regex you can exclude files you don't want to edit. Trailers, sample files, proof files and so on.
 
 ### pattern_tv
-This regex is used as a fallback if the episode title extraction via a matching .nfo file has failed.<br>
+This regex is used as a fallback if the episode title extraction via a matching .nfo file has failed (happens for multi-episode files for example).<br>
 Adjust it according to your naming scheme. If all your episodes are named `Series name SxxExx Episode` for example, you could use:<br>
 `'^.* \S\d{2,4}E\d{2,4}(?: S\d{2,4}E\d{2,4})* (.*)\.mkv$'`<br>
 Assuming multi-episodes are named `series name SxxExx SxxExx episode name`.<br>
 If you want to disable the fallback, set this to `'^_$'` so it never matches.
 
 ### pattern_movie
-This regex is used as a fallback if the movie title extraction via a matching .nfo file has failed (happens for multi-episode files for example)<br>
+This regex is used as a fallback if the movie title extraction via a matching .nfo file has failed.<br>
 Adjust it according to your naming scheme. If your movies are named `movie name (year).mkv` for example, you could use:<br>
 `'^(.*)\s\(\d{4}\)\.mkv$'`<br>
 If you want to disable the fallback, set this to `'^_$'` so it never matches.
