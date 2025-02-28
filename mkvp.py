@@ -609,7 +609,7 @@ def extract_title(file_path):
     nfo_file = os.path.splitext(file_path)[0]+".nfo"
     if os.path.isfile(nfo_file): # Check for matching .nfo file to extract the title
         try:
-            with open(nfo_file) as f:
+            with open(nfo_file, encoding="utf-8") as f:
                 xml = f.read()
             root = ET.fromstring(re.sub(r"(<\?xml[^>]+\?>)", r"\1\n<root>", xml) + "</root>") # Add fake root to parse multi-episode nfos with multiple roots
             titles = []
