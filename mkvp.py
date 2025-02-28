@@ -611,17 +611,44 @@ def extract_title(file_path):
         try:
             with open(nfo_file) as f:
                 xml = f.read()
-            root = ET.fromstring(re.sub(r"(<\?xml[^>]+\?>(?:\n<!--[^>]+-->)?)", r"\1\n<root>", xml) + "</root>") # Add fake root to parse multi-episode nfos with multiple roots
+            root = ET.fromstring(re.sub(r"(<\?xml[^>]+\?>)", r"\1\n<root>", xml) + "</root>") # Add fake root to parse multi-episode nfos with multiple roots
             titles = []
+            pattern_mul_ep_part = re.compile(r'^(.+) (\(\d\)|\d)$') # Detects numbered episodes which end with a number, "1" or "(1)" for example
             for child in root:
                 titles.append(child.findtext('title'))
             if titles:
                 if len(titles) == 1:
                     title = titles[0]
                 elif len(titles) == 2:
-                    title = (" & ").join(titles) # Double episodes get "episode 1 & episode 2"
+                    base = []
+                    part_num = []
+                    for title in titles:
+                        match = re.match(pattern_mul_ep_part, title)
+                        if not match or len(base) > 1:
+                            title = (" & ").join(titles) # Double episodes get "episode 1 & episode 2"
+                            break
+                        elif match.group(1) not in base:
+                            base.append(match.group(1))
+                            part_num.append(match.group(2))
+                        else:
+                            part_num.append(match.group(2))
+                    if base and len(part_num) > 1:
+                        title = f'{base[0]} {" & ".join(part_num)}' # Numbered double episodes get "episode 1 & 2"
                 else:
-                    title = ", ".join(titles[:-1]) + " & " + titles[-1] # Multi episodes get "episode 1, episode 2 & episode 3"
+                    base = []
+                    part_num = []
+                    for title in titles:
+                        match = re.match(pattern_mul_ep_part, title)
+                        if not match or len(base) > 1:
+                            title = f'{", ".join(titles[:-1])} & {titles[-1]}' # Multi episodes get "episode 1, episode 2 & episode n"
+                            break
+                        elif match.group(1) not in base:
+                            base.append(match.group(1))
+                            part_num.append(match.group(2))
+                        else:
+                            part_num.append(match.group(2))
+                    if base and len(part_num) > 1:
+                        title = f'{base[0]} {part_num[0]}-{part_num[-1]}' # Numbered multi episodes get "episode 1-n"
             else:
                 title = ""
         except ET.ParseError as e: # Fall back to using the filename if the parsing fails
