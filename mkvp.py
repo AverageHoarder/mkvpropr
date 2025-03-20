@@ -145,11 +145,54 @@ def mkv_tools_on_path():
     else:
         return
 
+def print_track_info(track_info):
+    order = ["video", "audio", "subtitles"]  # Define the desired order
+
+    for tracktype in order:
+        if tracktype not in track_info:
+            continue  # Skip if no tracks of this type exist
+ 
+        tracks = track_info[tracktype]
+        if tracktype == "video":
+            # print("Video:")
+            for track in tracks:
+                id = track["id"]
+                lang = track["lang"]
+                name = track["name"]
+                codec = track["codec"]
+                print(f"{id:2} | {lang:^5} | {name[:40]:40} | {codec:20}")
+            print(h_bar)
+        elif tracktype =="audio":
+            # print("Audio:")
+            for track in tracks:
+                id = track["id"]
+                lang = track["lang"]
+                name = track["name"]
+                codec = track["codec"]
+                default = "Default" if track["default"] else ""
+                comm = "Commentary" if track["comm"] else ""
+                print(f"{id:2} | {lang:^5} | {name[:40]:40} | {codec[:6]:^6} | {" "*6} | {default:^7} | {" "*3} | {comm:^10}")
+            print(h_bar)
+        elif tracktype =="subtitles":
+            # print("Subtitles:")
+            for track in tracks:
+                id = track["id"]
+                lang = track["lang"]
+                name = track["name"]
+                codec = track["codec"]
+                forced = "Forced" if track["forced"] else ""
+                default = "Default" if track["default"] else ""
+                sdh = "SDH" if track["sdh"] else ""
+                comm = "Commentary" if track["comm"] else ""
+                print(f"{id:2} | {lang:^5} | {name[:40]:40} | {codec[:6]:^6} | {forced:^6} | {default:^7} | {sdh:^3} | {comm:^10}")
+            print(h_bar)
+
 # Get the audio, subtitle and default-track info from the user
 def getInput(mkv_files, movies_in_cat, category_count):
     # Validate inputs and requery in case of mistakes
     pattern_input = re.compile(r'^(?: *(\w{2,5}) *| *(-) *),(?: +([\w\d]{2,5}) *| +(-) *)+,(?: +([\w\d]{2,5}) *| *(-) *)* *$') # Audio codes are mandatory, subtitle codes optional
     testmovie = movies_in_cat[0]
+    track_info = mkv_files[testmovie]
     group_filecount = len(movies_in_cat)
     video_track_count = len(mkv_files[testmovie]["video"]) if "video" in mkv_files[testmovie] else 0
     audio_track_count = len(mkv_files[testmovie]["audio"]) if "audio" in mkv_files[testmovie] else 0
@@ -159,41 +202,7 @@ def getInput(mkv_files, movies_in_cat, category_count):
         print(h_bar)
         print(os.path.basename(testmovie)[:100])
         print(h_bar)
-        track_info = mkv_files[testmovie]
-        for tracktype, tracks in track_info.items():
-            if tracktype == "video":
-                # print("Video:")
-                for track in tracks:
-                    id = track["id"]
-                    lang = track["lang"]
-                    name = track["name"]
-                    codec = track["codec"]
-                    print(f"{id:2} | {lang:^5} | {name[:40]:40} | {codec:20}")
-                print(h_bar)
-            elif tracktype =="audio":
-                # print("Audio:")
-                for track in tracks:
-                    id = track["id"]
-                    lang = track["lang"]
-                    name = track["name"]
-                    codec = track["codec"]
-                    default = "Default" if track["default"] else ""
-                    comm = "Commentary" if track["comm"] else ""
-                    print(f"{id:2} | {lang:^5} | {name[:40]:40} | {codec[:6]:^6} | {" "*6} | {default:^7} | {" "*3} | {comm:^10}")
-                print(h_bar)
-            elif tracktype =="subtitles":
-                # print("Subtitles:")
-                for track in tracks:
-                    id = track["id"]
-                    lang = track["lang"]
-                    name = track["name"]
-                    codec = track["codec"]
-                    forced = "Forced" if track["forced"] else ""
-                    default = "Default" if track["default"] else ""
-                    sdh = "SDH" if track["sdh"] else ""
-                    comm = "Commentary" if track["comm"] else ""
-                    print(f"{id:2} | {lang:^5} | {name[:40]:40} | {codec[:6]:^6} | {forced:^6} | {default:^7} | {sdh:^3} | {comm:^10}")
-                print(h_bar)
+        print_track_info(track_info=track_info)
         print(h_bar)
         print(f'Example: ja, de en1, def en1\n  "s" skip current group, "v" show possible codes, "f" show filenames in group, "ff" show filepaths')
         print(h_bar)
@@ -702,8 +711,11 @@ def process_category(category_dict, cat, user_input, mkv_files):
                 file_path,
                 "--edit", "info", "--set", f"title={title}", # Comment this out if you don't want the file title to be set to the movie or episode name
                 "--edit", "track:v1", "--set", f"name={title}", # Comment this out if you don't want the video track name to be set to the movie or episode name
-                "--set" if video_track != "-" else "", f"language={video_track}" if video_track != "-" else "" # Only set video track language if it is not "-"
             ]
+            if video_track != "-":
+                mkvpropedit_cmd.extend([
+                    "--set", f"language={video_track}", # Only set video track language if it is not "-"
+                ])
 
             # Iterators used to edit multiple audio and subtitle tracks
             audio_track_number = 1
@@ -853,9 +865,7 @@ def main(args):
     with tqdm(total = len(categories), position=0, desc="Categories", unit="cat", ncols=100) as pbar:
         category_count = 0
         for cat in categories:
-            movies_in_cat = []
-            for movie in category_dict[cat]:
-                movies_in_cat.append(movie)
+            movies_in_cat = [movie for movie in category_dict[cat]]
             user_input = getInput(mkv_files=mkv_files, movies_in_cat=movies_in_cat, category_count=category_count) # Query user for language codes specific to the category
             if user_input == "s":
                 print("Skipping current category.")
