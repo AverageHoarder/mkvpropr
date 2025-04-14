@@ -188,7 +188,7 @@ def print_track_info(track_info):
             print(h_bar)
 
 # Get the audio, subtitle and default-track info from the user
-def getInput(mkv_files, movies_in_cat, category_count):
+def getInput(mkv_files, movies_in_cat, category_count, last_input):
     # Validate inputs and requery in case of mistakes
     pattern_input = re.compile(r'^(?: *(\w{2,5}) *| *(-) *),(?: +([\w\d]{2,5}) *| +(-) *)+,(?: +([\w\d]{2,5}) *| *(-) *)* *$') # Audio codes are mandatory, subtitle codes optional
     testmovie = movies_in_cat[0]
@@ -204,13 +204,14 @@ def getInput(mkv_files, movies_in_cat, category_count):
         print(h_bar)
         print_track_info(track_info=track_info)
         print(h_bar)
-        print(f'Example: ja, de en1, def en1\n  "s" skip current group, "v" show possible codes, "f" show filenames in group, "ff" show filepaths')
+        print(f'Example: ja, de en1, def en1' if not last_input else f'Last input: {last_input}. Use "i" to reuse it')
+        print(f'  "s" skip current group, "v" show possible codes, "f" show filenames in group, "ff" show filepaths')
         print(h_bar)
         user_input = input(f"Group {category_count + 1} contains {group_filecount} " + ("files." if group_filecount > 1 else "file.") + " \nCodes please:\n")
 
         # Skip the current group
         if user_input == "s":
-            return user_input
+            return user_input, last_input
         # Show all possible language codes
         elif user_input == "v":
             print(h_bar)
@@ -238,6 +239,9 @@ def getInput(mkv_files, movies_in_cat, category_count):
             print(h_bar)
             input("Press Enter to continue...")
             continue
+        # Set the user input to the last input
+        elif user_input == "i" and last_input:
+            user_input = last_input
         # Split the user input
         inputs = []
         inputs.extend(user_input.split(",")[0].split())
@@ -267,7 +271,8 @@ def getInput(mkv_files, movies_in_cat, category_count):
             print("Invalid code(s) or syntax, try again.")
             sleep(1)
         elif match_input and all(input in langs for input in inputs_stripped): # Check if all language codes are in the list
-            return user_input
+            last_input = user_input
+            return user_input, last_input
         else:
             fehler=set(inputs) - langs.keys()
             print(fehler)
@@ -864,9 +869,14 @@ def main(args):
 
     with tqdm(total = len(categories), position=0, desc="Categories", unit="cat", ncols=100) as pbar:
         category_count = 0
+        last_input = ""
         for cat in categories:
             movies_in_cat = [movie for movie in category_dict[cat]]
-            user_input = getInput(mkv_files=mkv_files, movies_in_cat=movies_in_cat, category_count=category_count) # Query user for language codes specific to the category
+            # Query user for language codes specific to the category
+            user_input, last_input = getInput(mkv_files=mkv_files,
+                                              movies_in_cat=movies_in_cat,
+                                              category_count=category_count,
+                                              last_input=last_input)
             if user_input == "s":
                 print("Skipping current category.")
                 pbar.update(1)
