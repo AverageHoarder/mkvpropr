@@ -285,3 +285,6 @@ Only use `f` as input to show the filenames of each file in the group (this can 
 
 **ff to show absolute filepaths**<br>
 Only use `ff` as input to show the absolute paths of each file in the group.
+
+**i to reuse the last input**<br>
+Only use `i` as input to reuse the last input for the current group.
